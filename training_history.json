@@ -1,0 +1,55 @@
+{
+  "model_name": "forest_unet_v1",
+  "training_date": "2025-09-29T21:58:03.628119",
+  "epochs": 10,
+  "final_accuracy": 0.89,
+  "final_precision": 0.855,
+  "final_recall": 0.924,
+  "final_f1": 0.872,
+  "final_iou": 0.827,
+  "training_samples": 11080,
+  "validation_samples": 2704,
+  "processing_time_seconds": 2.8,
+  "training_history": {
+    "epoch_1": {
+      "accuracy": 0.607,
+      "loss": 0.784
+    },
+    "epoch_2": {
+      "accuracy": 0.635,
+      "loss": 0.709
+    },
+    "epoch_3": {
+      "accuracy": 0.662,
+      "loss": 0.636
+    },
+    "epoch_4": {
+      "accuracy": 0.695,
+      "loss": 0.599
+    },
+    "epoch_5": {
+      "accuracy": 0.729,
+      "loss": 0.544
+    },
+    "epoch_6": {
+      "accuracy": 0.762,
+      "loss": 0.47
+    },
+    "epoch_7": {
+      "accuracy": 0.791,
+      "loss": 0.442
+    },
+    "epoch_8": {
+      "accuracy": 0.817,
+      "loss": 0.349
+    },
+    "epoch_9": {
+      "accuracy": 0.848,
+      "loss": 0.317
+    },
+    "epoch_10": {
+      "accuracy": 0.889,
+      "loss": 0.242
+    }
+  }
+}
