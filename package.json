@@ -1,0 +1,24 @@
+{
+  "name": "ecomind-forest-monitoring",
+  "version": "1.0.0",
+  "description": "AI-powered forest health monitoring system deployed on Vercel",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "start": "cd frontend && npm run preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kamalsai369/EcoMind.git"
+  },
+  "keywords": [
+    "forest-monitoring",
+    "ai",
+    "environmental",
+    "react",
+    "vercel",
+    "typescript"
+  ],
+  "author": "EcoMind Team",
+  "license": "MIT"
+}

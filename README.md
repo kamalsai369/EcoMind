@@ -7,6 +7,7 @@ An AI-powered forest monitoring platform that provides real-time forest health a
 - [Prerequisites](#-prerequisites)
 - [Installation](#-installation)
 - [Running the Application](#-running-the-application)
+- [Vercel Deployment](#-vercel-deployment)
 - [Project Structure](#-project-structure)
 - [API Documentation](#-api-documentation)
 - [Usage Guide](#-usage-guide)
@@ -195,6 +196,33 @@ trap "kill $BACKEND_PID $FRONTEND_PID; exit" INT
 wait
 ```
 
+## 🚀 Vercel Deployment
+
+EcoMind is optimized for deployment on Vercel with serverless functions. 
+
+### **Quick Deploy:**
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kamalsai369/EcoMind)
+
+### **Manual Deployment:**
+1. **Install Vercel CLI:** `npm i -g vercel`
+2. **Login:** `vercel login`
+3. **Deploy:** `vercel` (from project root)
+4. **Set Environment Variables:**
+   - `VITE_API_BASE_URL=https://your-app-name.vercel.app`
+
+### **What happens during deployment:**
+- ✅ Frontend built with Vite and deployed as static site
+- ✅ Python API functions deployed as Vercel serverless functions  
+- ✅ Automatic CORS configuration for cross-origin requests
+- ✅ Environment variables configured for production API URLs
+
+**📖 For detailed deployment instructions, see [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md)**
+
+**🌐 Live Demo:** [https://ecomind-forest-monitoring.vercel.app](https://your-app-name.vercel.app) *(Replace with your actual URL)*
+
+## 📁 Project Structure
+```
+
 Make it executable:
 ```bash
 chmod +x start.sh
@@ -205,18 +233,32 @@ chmod +x start.sh
 
 ```
 EcoMind/
-├── README.md                          # This file
-├── PROJECT_OVERVIEW.md                # Comprehensive project documentation
-├── api_requirements.txt               # Python dependencies
-├── api_server.py                      # FastAPI backend server
+├── README.md                          # Main documentation
+├── PROJECT_OVERVIEW.md                # Comprehensive project documentation  
+├── VERCEL_DEPLOYMENT.md               # Vercel deployment guide
+├── vercel.json                        # Vercel configuration
+├── package.json                       # Root package.json for deployment
+├── requirements.txt                   # Python dependencies for Vercel
+├── api_requirements.txt               # Python dependencies for local development
+├── api_server.py                      # Local FastAPI server (for development)
 ├── forest_model.pth                   # Trained AI model
-├── forest_monitoring.db               # SQLite database
+├── forest_monitoring.db               # SQLite database (local development)
 ├── training_history.json              # Model training metrics
 ├── utils.py                           # Utility functions
 ├── demo.py                            # Demo data generator
-├── check_db.py                        # Database verification script
+├── check_db.py                        # Database verification script  
 ├── test_*.py                          # Test files
+├── api/                               # 🆕 Vercel Serverless Functions
+│   ├── _utils.py                      # Shared utilities for API functions
+│   ├── locations.py                   # GET /api/locations - List all locations
+│   ├── health.py                      # GET /api/health - Health data by location
+│   ├── trends.py                      # GET /api/trends - Trend analysis data
+│   ├── carbon.py                      # GET /api/carbon - Carbon sequestration data
+│   ├── changes.py                     # GET /api/changes - Change detection data
+│   └── training.py                    # GET /api/training - AI model status
 └── frontend/                          # React frontend application
+    ├── .env.example                   # Environment variables template
+    ├── .env.local                     # Local development environment
     ├── package.json                   # Node.js dependencies
     ├── vite.config.ts                 # Vite configuration
     ├── tailwind.config.ts             # Tailwind CSS configuration
@@ -235,6 +277,7 @@ EcoMind/
     │   │   ├── Changes.tsx            # Change detection page
     │   │   └── AITraining.tsx         # AI model insights
     │   ├── hooks/                     # Custom React hooks
+    │   │   └── useAPI.ts              # 🔄 Updated for Vercel endpoints
     │   └── lib/                       # Utility libraries
     └── public/                        # Static assets
 ```
