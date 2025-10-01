@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* EcoMind Design System - Forest Intelligence Platform
+All colors MUST be HSL. Comprehensive design tokens for urban forest monitoring.
+*/
+
+@layer base {
+  :root {
+    /* Core forest green palette */
+    --background: 0 0% 100%;
+    --foreground: 220 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
+
+    /* Forest green primary system */
+    --primary: 154 65% 31%;        /* Deep forest green #2d6a4f */
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 154 48% 52%;   /* Medium forest green #52b788 */
+    --primary-lighter: 154 35% 65%; /* Light forest green #95d5b2 */
+
+    /* Natural secondary colors */
+    --secondary: 142 76% 73%;       /* Sage green #b8e6b8 */
+    --secondary-foreground: 154 65% 20%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 142 76% 73%;          /* Sage green accent */
+    --accent-foreground: 154 65% 20%;
+
+    /* Status colors for tree health */
+    --success: 142 69% 58%;         /* Healthy green */
+    --success-foreground: 0 0% 98%;
+    --warning: 45 93% 58%;          /* Warning yellow */
+    --warning-foreground: 45 30% 15%;
+    --danger: 0 84% 60%;            /* Alert red */
+    --danger-foreground: 0 0% 98%;
+    --info: 200 98% 39%;            /* Info blue */
+    --info-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 154 65% 31%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* EcoMind gradients and animations */
+@layer utilities {
+  .gradient-forest,
+  .bg-gradient-forest {
+    background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--primary)) 100%);
+  }
+  
+  .gradient-sage,
+  .bg-gradient-sage {
+    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary-lighter)) 100%);
+  }
+  
+  .gradient-health,
+  .bg-gradient-health {
+    background: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(var(--primary-light)) 100%);
+  }
+  
+  .gradient-carbon,
+  .bg-gradient-carbon {
+    background: linear-gradient(135deg, hsl(var(--info)) 0%, hsl(var(--primary)) 100%);
+  }
+  
+  .animate-counter {
+    animation: countUp 2s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .shadow-forest {
+    box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
+  }
+  
+  .shadow-forest-lg {
+    box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
+  }
+}
+
+@keyframes countUp {
+  from {
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
