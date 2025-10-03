@@ -1,6 +1,7 @@
 """
 EcoMind API Server
 FastAPI backend to serve forest monitoring data to the React frontend
+Now with REAL satellite data from Copernicus Sentinel-2!
 """
 
 from fastapi import FastAPI, HTTPException
@@ -12,6 +13,21 @@ from typing import List, Dict, Any, Optional
 import numpy as np
 import random
 from pydantic import BaseModel
+import logging
+
+# Import our satellite data module
+try:
+    from satellite_data import get_sentinel_data, get_synthetic_fallback_data
+    SATELLITE_DATA_AVAILABLE = True
+    print("🛰️ Satellite data module loaded successfully!")
+except ImportError as e:
+    SATELLITE_DATA_AVAILABLE = False
+    print(f"⚠️ Satellite data module not available: {e}")
+    print("📊 Falling back to synthetic data generation")
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="EcoMind API",
@@ -34,8 +50,45 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-def generate_synthetic_data_for_city(city_name: str) -> Dict[str, Any]:
-    """Generate synthetic forest data for a new city"""
+def get_forest_data_for_city(city_name: str, prefer_satellite: bool = True) -> Dict[str, Any]:
+    """
+    Get forest data for a city - tries real satellite data first, falls back to synthetic
+    
+    Args:
+        city_name: Name of the city
+        prefer_satellite: Whether to try satellite data first (default: True)
+    
+    Returns:
+        Dictionary containing forest data with data_source indicator
+    """
+    
+    logger.info(f"🌲 Fetching forest data for {city_name}")
+    
+    # Try satellite data first if available and preferred
+    if prefer_satellite and SATELLITE_DATA_AVAILABLE:
+        try:
+            logger.info(f"🛰️ Attempting to fetch satellite data for {city_name}")
+            satellite_data = get_sentinel_data(city_name)
+            
+            if satellite_data:
+                logger.info(f"✅ Successfully got satellite data for {city_name}")
+                return satellite_data
+            else:
+                logger.warning(f"⚠️ No satellite data available for {city_name}, using synthetic fallback")
+        
+        except Exception as e:
+            logger.error(f"❌ Satellite data fetch failed for {city_name}: {e}")
+    
+    # Fallback to synthetic data
+    if SATELLITE_DATA_AVAILABLE:
+        logger.info(f"📊 Using synthetic fallback data for {city_name}")
+        return get_synthetic_fallback_data(city_name)
+    else:
+        logger.info(f"📊 Using original synthetic data generation for {city_name}")
+        return generate_synthetic_data_for_city_original(city_name)
+
+def generate_synthetic_data_for_city_original(city_name: str) -> Dict[str, Any]:
+    """Original synthetic forest data generation (kept as ultimate fallback)"""
     # Set seed based on city name for consistency
     random.seed(hash(city_name) % 1000000)
     np.random.seed(hash(city_name) % 1000000)
@@ -211,8 +264,8 @@ async def add_new_location(location: str):
         
         location = location.strip().title()
         
-        # Generate data for the new city
-        city_data = generate_synthetic_data_for_city(location)
+        # Generate data for the new city (satellite + fallback)
+        city_data = get_forest_data_for_city(location)
         
         # Add to database
         if add_city_to_database(city_data):
@@ -273,7 +326,7 @@ async def search_or_add_location(q: str):
         else:
             # No existing location found, generate new data
             location_name = query.title()
-            city_data = generate_synthetic_data_for_city(location_name)
+            city_data = get_forest_data_for_city(location_name)
             
             # Add to database
             if add_city_to_database(city_data):
@@ -335,7 +388,7 @@ async def get_overview_metrics(location: Optional[str] = None):
             
             if result['count'] == 0:
                 # Location doesn't exist, generate new data
-                city_data = generate_synthetic_data_for_city(location)
+                city_data = get_forest_data_for_city(location)
                 if add_city_to_database(city_data):
                     print(f"Auto-generated data for new location: {location}")
                 else:
@@ -419,7 +472,7 @@ async def get_health_distribution(location: Optional[str] = None):
             
             if result['count'] == 0:
                 # Location doesn't exist, generate new data
-                city_data = generate_synthetic_data_for_city(location)
+                city_data = get_forest_data_for_city(location)
                 if add_city_to_database(city_data):
                     print(f"Auto-generated health data for new location: {location}")
                 else:
@@ -619,6 +672,80 @@ async def get_carbon_data():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Carbon data error: {str(e)}")
 
+@app.get("/api/data-source/info")
+async def get_data_source_info():
+    """Get information about current data sources and satellite capabilities"""
+    return {
+        "satellite_data_available": SATELLITE_DATA_AVAILABLE,
+        "data_sources": {
+            "primary": "Copernicus Sentinel-2 SR Harmonized" if SATELLITE_DATA_AVAILABLE else "Synthetic Generation",
+            "fallback": "Synthetic Generation",
+            "dataset_url": "https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED"
+        },
+        "capabilities": {
+            "real_satellite_imagery": SATELLITE_DATA_AVAILABLE,
+            "ndvi_calculation": SATELLITE_DATA_AVAILABLE,
+            "cloud_masking": SATELLITE_DATA_AVAILABLE,
+            "vegetation_indices": SATELLITE_DATA_AVAILABLE,
+            "global_coverage": True,
+            "automatic_fallback": True
+        },
+        "earth_engine": {
+            "authenticated": SATELLITE_DATA_AVAILABLE,
+            "setup_required": not SATELLITE_DATA_AVAILABLE
+        }
+    }
+
+@app.get("/api/data-source/test/{location}")
+async def test_satellite_data(location: str):
+    """Test satellite data fetch for a specific location"""
+    if not SATELLITE_DATA_AVAILABLE:
+        return {
+            "error": "Satellite data module not available",
+            "suggestion": "Run: python setup_earth_engine.py"
+        }
+    
+    try:
+        from satellite_data import get_sentinel_data
+        data = get_sentinel_data(location)
+        
+        if data:
+            return {
+                "success": True,
+                "location": location,
+                "data_source": data.get('data_source', 'unknown'),
+                "satellite_info": data.get('satellite_info', {}),
+                "vegetation_indices": data.get('vegetation_indices', {}),
+                "summary": {
+                    "total_trees": data.get('tree_count', 0),
+                    "forest_area_ha": data.get('forest_area_ha', 0),
+                    "health_distribution": data.get('health_percentages', {})
+                }
+            }
+        else:
+            return {
+                "success": False,
+                "location": location,
+                "error": "No satellite data available for this location",
+                "fallback_used": True
+            }
+    
+    except Exception as e:
+        return {
+            "success": False,
+            "location": location,
+            "error": str(e),
+            "suggestion": "Check Earth Engine authentication"
+        }
+
 if __name__ == "__main__":
     import uvicorn
+    print("🌲 Starting EcoMind API Server")
+    if SATELLITE_DATA_AVAILABLE:
+        print("🛰️ Satellite data integration: ENABLED")
+        print("📡 Data source: Copernicus Sentinel-2 SR Harmonized")
+    else:
+        print("📊 Satellite data integration: DISABLED")
+        print("🔧 Run 'python setup_earth_engine.py' to enable satellite data")
+    print("🚀 Server starting on http://localhost:8000")
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

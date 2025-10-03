@@ -15,6 +15,14 @@ An AI-powered forest monitoring platform that provides real-time forest health a
 
 ## ✨ Features
 
+### 🛰️ **NEW: Real Satellite Data Integration**
+- **Copernicus Sentinel-2 Data** - Real satellite imagery from ESA's Sentinel-2 mission
+- **NDVI/EVI Analysis** - Actual vegetation indices calculated from satellite bands
+- **Cloud-Free Composites** - Advanced cloud masking for accurate forest analysis
+- **Global Coverage** - Monitor any location worldwide with satellite data
+- **Automatic Fallback** - Seamless switch to synthetic data when satellite unavailable
+
+### 🌲 **Core Forest Monitoring**
 - **Real-time Forest Health Monitoring** - Live tracking of forest health metrics
 - **AI-Powered Predictions** - Machine learning models for health forecasting
 - **Dynamic Location Management** - Scalable monitoring across multiple forest areas
@@ -83,8 +91,34 @@ The `api_requirements.txt` includes:
 - `numpy` - Numerical computing
 - `python-multipart` - Form data parsing
 - `python-cors` - Cross-Origin Resource Sharing
+- `earthengine-api` - Google Earth Engine API for satellite data
+- `google-auth` - Google authentication
 
-### 3. Frontend Setup (React/TypeScript)
+### 3. 🛰️ Satellite Data Setup (Optional but Recommended)
+
+#### Enable Real Satellite Data from Copernicus Sentinel-2:
+```bash
+# Install satellite data dependencies (already included in api_requirements.txt)
+pip install earthengine-api google-auth google-auth-oauthlib
+
+# Setup Google Earth Engine authentication
+python setup_earth_engine.py
+
+# Or authenticate manually
+earthengine authenticate
+
+# Test satellite integration
+python test_satellite_integration.py
+```
+
+#### What You Get with Satellite Data:
+- **Real NDVI/EVI** calculated from actual Sentinel-2 imagery
+- **Forest area calculations** based on satellite-detected vegetation
+- **Cloud-free composites** using 30-day temporal windows
+- **Global coverage** for any location worldwide
+- **Automatic fallback** to synthetic data if satellite unavailable
+
+### 4. Frontend Setup (React/TypeScript)
 
 #### Navigate to Frontend Directory:
 ```bash
@@ -266,6 +300,10 @@ EcoMind/
 - `GET /model/status` - Get AI model training status
 - `GET /model/predictions/{location}` - Get future health predictions
 
+#### 🛰️ **NEW: Satellite Data Endpoints**
+- `GET /api/data-source/info` - Get current data source information and capabilities
+- `GET /api/data-source/test/{location}` - Test satellite data fetch for specific location
+
 #### System Information
 - `GET /` - API welcome message and status
 - `GET /docs` - Interactive API documentation (Swagger UI)
@@ -282,6 +320,16 @@ fetch('http://localhost:8000/health/Seattle')
 fetch('http://localhost:8000/locations')
   .then(response => response.json())
   .then(locations => console.log(locations));
+
+// Check if satellite data is available
+fetch('http://localhost:8000/api/data-source/info')
+  .then(response => response.json())
+  .then(info => console.log('Satellite data available:', info.satellite_data_available));
+
+// Test satellite data for Mumbai
+fetch('http://localhost:8000/api/data-source/test/mumbai')
+  .then(response => response.json())
+  .then(result => console.log('Satellite test result:', result));
 ```
 
 ## 📖 Usage Guide
